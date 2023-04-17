@@ -2,7 +2,7 @@
   "name": "strapi-provider-translate-chatgpt",
   "version": "1.0.0",
   "description": "ChatGPT provider for translate plugin in Strapi 4",
-  "main": "index.js",
+  "main": "./dist",
   "scripts": {
     "test:unit": "ts-mocha -p tsconfig.json --file tests/unit/_setup.ts --exit tests/unit/**.test.ts",
     "build": "tsc",
@@ -44,9 +44,6 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^5.0.4"
   },
-  "files": [
-    "lib/**/*"
-  ],
   "dependencies": {
     "chai-as-promised": "^7.1.1",
     "openai": "^3.2.1"

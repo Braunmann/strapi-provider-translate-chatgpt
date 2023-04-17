@@ -2,28 +2,11 @@
 import { expect } from 'chai';
 import { rest } from 'msw';
 
-import * as provider from '../../src/provider';
+import * as provider from '../../src';
 import { getServer } from '../../src/__mocks__/server';
 import { translateHandler, usageHandler } from '../../src/__mocks__/openai';
 
-//
-// const { URLSearchParams } = require('url');
-// const { faker } = require('@faker-js/faker');
-// const { stringByteLength } = require('strapi-plugin-translate/server/utils/byte-length');
-// const { rest } = require('msw');
-//
-// const deeplTestApi = 'https://test.api.deepl.com';
-//
-// const authKey = 'token';
-// const invalidAuthKey = 'invalid';
-// const usage_result = {
-//   character_count: 180118,
-//   character_limit: 1250000,
-// };
-
-// process.env['OPENAI_API_KEY'] = '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';
-// process.env['OPENAI_API_MAX_TEXTS'] = 10000;
-const apiKey = '';
+const apiKey = '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';
 const model = 'text-davinci-003';
 const basePath = 'https://api.openai.com/v1';
 
@@ -250,154 +233,6 @@ describe('ChatGPT provider', () => {
       });
     });
   });
-  // let server;
-  //
-  // const isAuthenticated = (req) => {
-  //   const passedAuthKey = req.headers.get('authorization').replace('DeepL-Auth-Key', '').trim();
-  //   let matchAuthKey = authKey;
-  //   if (req.url.toString().startsWith(DEEPL_FREE_API)) {
-  //     matchAuthKey += ':fx';
-  //   } else if (req.url.toString().startsWith(deeplTestApi)) {
-  //     matchAuthKey += ':test';
-  //   }
-  //   return matchAuthKey === passedAuthKey;
-  // };
-  //
-  // const usageHandler = async (req, res, ctx) => {
-  //   if (isAuthenticated(req)) {
-  //     return res(ctx.json(usage_result));
-  //   }
-  //   return res(ctx.status(403));
-  // };
-  // const translateHandler = async (req, res, ctx) => {
-  //   const body = await req.text();
-  //   if (stringByteLength(body || '') > DEEPL_API_MAX_REQUEST_SIZE) {
-  //     console.log({ length: stringByteLength(body || '') });
-  //     return res(ctx.status(413));
-  //   }
-  //   const params = new URLSearchParams(body);
-  //   if (isAuthenticated(req)) {
-  //     let text = params.getAll('text');
-  //     if (text.length == 0) {
-  //       return res(ctx.status(400));
-  //     }
-  //     if (text.length > 50) {
-  //       return res(ctx.status(413));
-  //     }
-  //     let targetLang = params.get('target_lang');
-  //     if (!targetLang) {
-  //       return res(ctx.status(400));
-  //     }
-  //     return res(
-  //       ctx.json({
-  //         translations: text.map((t) => ({
-  //           detected_source_language: 'EN',
-  //           text: t,
-  //         })),
-  //       }),
-  //     );
-  //   }
-  //   return res(ctx.status(403));
-  // };
-  // beforeAll(() => {
-  //   server = getServer();
-  //
-  //   Object.defineProperty(global, 'strapi', {
-  //     value: require('../../__mocks__/initStrapi')({}),
-  //     writable: true,
-  //   });
-  // });
-  //
-  // afterEach(async () => {
-  //   server.resetHandlers();
-  // });
-  //
-  // afterAll(async () => {
-  //   server.close();
-  // });
-  // describe("usage", () => {
-  //   describe.each([
-  //     [true, true],
-  //     [true, false],
-  //     [false, true],
-  //     [false, false],
-  //   ])("for free api %p, with key valid %p", (freeApi, validKey) => {
-  //     let deeplProvider;
-  //
-  //     beforeAll(() => {
-  //       const usedKey = validKey ? authKey : invalidAuthKey;
-  //       deeplProvider = provider.init({
-  //         apiKey: freeApi ? `${usedKey}:fx` : usedKey,
-  //       });
-  //     });
-  //     beforeEach(() => {
-  //       server.use(
-  //         rest.post(`${DEEPL_FREE_API}/usage`, usageHandler),
-  //         rest.post(`${DEEPL_PAID_API}/usage`, usageHandler)
-  //       );
-  //     });
-  //     if (validKey) {
-  //       describe("succeeds", () => {
-  //         it("with valid key", async () => {
-  //           // when
-  //           const result = await deeplProvider.usage();
-  //
-  //           // then
-  //           expect(result).toEqual({
-  //             count: usage_result.character_count,
-  //             limit: usage_result.character_limit,
-  //           });
-  //         });
-  //       });
-  //     } else {
-  //       describe("fails", () => {
-  //         it("with invalid key", async () => {
-  //           await expect(deeplProvider.usage()).rejects.toThrow(
-  //             "Authorization failure"
-  //           );
-  //         });
-  //       });
-  //     }
-  //   });
-  // });
-  //
-  //     describe('fails', () => {
-  //       async function forInvalidKey() {
-  //         // given
-  //         const params = {
-  //           sourceLocale: 'en',
-  //           targetLocale: 'de',
-  //           text: 'Some text',
-  //         };
-  //         await expect(
-  //           // when
-  //           async () => deeplProvider.translate(params),
-  //           // then
-  //         ).rejects.toThrow('Authorization failure');
-  //       }
-  //       async function forMissingTargetLang() {
-  //         // given
-  //         const params = {
-  //           text: 'Some text',
-  //         };
-  //         await expect(
-  //           // when
-  //           async () => deeplProvider.translate(params),
-  //           // then
-  //         ).rejects.toThrow('source and target locale must be defined');
-  //       }
-  //       if (!validKey) {
-  //         it('with invalid key', async () => {
-  //           await forInvalidKey();
-  //         });
-  //       }
-  //
-  //       it('with missing target language', async () => {
-  //         await forMissingTargetLang();
-  //       });
-  //     });
-  //   });
-  // });
   //
   // describe('setup', () => {
   //   beforeEach(() => {

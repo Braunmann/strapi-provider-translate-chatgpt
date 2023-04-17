@@ -2,7 +2,7 @@ import { createTranslateClient } from './openai';
 import { getService } from './getService';
 import { parseLocale } from './parseLocale';
 
-export const provider = 'chatgpt';
+export const index = 'chatgpt';
 export const name = 'ChatGPT';
 
 export const init = (providerOptions = {}) => {
