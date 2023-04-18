@@ -1,6 +1,11 @@
 const translateHandler = async (req, res, ctx) => {
   const body = await req.json();
 
+  // Too many requests
+  if (body.prompt === 'Translate this from EN in to DE:\n\ntoo many requests') {
+    return res(ctx.status(429));
+  }
+
   // TODO mock no model
   // console.log(body);
 

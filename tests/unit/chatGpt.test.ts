@@ -205,6 +205,18 @@ describe('ChatGPT provider', () => {
         // when, then
         await expect(chatGptProvider.translate(params)).to.be.rejectedWith(`source locale must be defined`);
       });
+
+      it('too many requests', async () => {
+        // given
+        const params = {
+          text: 'too many requests',
+          targetLocale: 'de',
+          sourceLocale: 'en',
+        };
+
+        // when, then
+        await expect(chatGptProvider.translate(params)).to.be.rejectedWith(`Too many requests`);
+      });
     });
   });
 

@@ -46,7 +46,16 @@ class ChatGptTranslator {
       }
       throw new Error('No result received');
     } catch (error) {
-      throw new Error(`translate(): ${JSON.stringify(error)}`);
+      const status = error?.response?.status;
+
+      switch (status) {
+        case 429:
+          throw new Error('Too many requests');
+        case 400:
+          throw new Error('Bad request');
+        default:
+          throw new Error(`translate(): ${JSON.stringify(error)}`);
+      }
     }
   }
   public async usage(): Promise<{
