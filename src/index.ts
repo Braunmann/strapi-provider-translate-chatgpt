@@ -10,6 +10,7 @@ interface IProviderOptions {
   model?: string;
   basePath?: string;
   localeMap?: object;
+  maxTokens?: number;
 }
 
 interface ITranslate {
@@ -32,13 +33,15 @@ class ProviderOptions {
   readonly apiKey: string;
   readonly model: string;
   readonly basePath: string;
-  readonly localeMap: object = {};
+  readonly localeMap: object;
+  readonly maxTokens: number;
 
-  constructor({ apiKey, model, basePath, localeMap }: IProviderOptions) {
+  constructor({ apiKey, model, basePath, localeMap, maxTokens }: IProviderOptions) {
     if (!apiKey) throw new Error(`apiKey is not defined`);
     if (!model) throw new Error(`model is not defined`);
     if (!basePath) throw new Error(`basePath is not defined`);
-    if (localeMap) this.localeMap = localeMap;
+    this.localeMap = localeMap || {};
+    this.maxTokens = maxTokens || 1000;
 
     this.apiKey = apiKey;
     this.model = model;
@@ -46,11 +49,12 @@ class ProviderOptions {
   }
 }
 
-export const init = ({ apiKey, model, basePath, localeMap }: IProviderOptions = {}): IProvider => {
+export const init = ({ apiKey, model, basePath, localeMap, maxTokens }: IProviderOptions = {}): IProvider => {
   const options = new ProviderOptions({
     apiKey: apiKey || process.env.OPENAI_API_KEY,
     model: model || process.env.OPENAI_MODEL || 'text-davinci-003',
     basePath: basePath || process.env.OPENAI_BASE_PATH || 'https://api.openai.com/v1',
+    maxTokens: maxTokens || Number(process.env.OPENAI_MAX_TOKENS) || 1000,
     localeMap,
   });
   const client = createTranslateClient(options);
@@ -90,7 +94,9 @@ export const init = ({ apiKey, model, basePath, localeMap }: IProviderOptions = 
       const sLocale = parseLocale(sourceLocale, options.localeMap, 'source');
       const tLocale = parseLocale(targetLocale, options.localeMap, 'target');
 
-      const result = await Promise.all(textArray.map((t) => client.translate(t, sLocale, tLocale)));
+      const result = await Promise.all(
+        textArray.map((t) => client.translate(t, sLocale, tLocale, { maxTokens: options.maxTokens })),
+      );
 
       if (format === 'markdown') {
         return formatService.htmlToMarkdown(result);

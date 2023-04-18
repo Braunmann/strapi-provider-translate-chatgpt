@@ -6,6 +6,10 @@ interface OpenAIOptions {
   basePath: string;
 }
 
+interface ITranslateOptions {
+  maxTokens: number;
+}
+
 class ChatGptTranslator {
   private _openAiClient: OpenAIApi | null = null;
   constructor(private readonly _options: OpenAIOptions) {}
@@ -18,7 +22,12 @@ class ChatGptTranslator {
     return this._openAiClient;
   }
 
-  public async translate(text: string, srcLocale: string, targetLocale: string): Promise<string> {
+  public async translate(
+    text: string,
+    srcLocale: string,
+    targetLocale: string,
+    options: ITranslateOptions,
+  ): Promise<string> {
     try {
       const prompt = `Translate this from ${srcLocale} in to ${targetLocale}:\n\n${text}`;
       const {
@@ -27,7 +36,7 @@ class ChatGptTranslator {
         model: this._options.model,
         prompt,
         temperature: 0.3,
-        max_tokens: 100,
+        max_tokens: options.maxTokens,
         top_p: 1.0,
         frequency_penalty: 0.0,
         presence_penalty: 0.0,
