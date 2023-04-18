@@ -54,7 +54,7 @@ export const init = ({ apiKey, model, basePath, localeMap, maxTokens }: IProvide
     apiKey: apiKey || process.env.OPENAI_API_KEY,
     model: model || process.env.OPENAI_MODEL || 'text-davinci-003',
     basePath: basePath || process.env.OPENAI_BASE_PATH || 'https://api.openai.com/v1',
-    maxTokens: maxTokens || Number(process.env.OPENAI_MAX_TOKENS) || 1000,
+    maxTokens: Number(maxTokens) || Number(process.env.OPENAI_MAX_TOKENS) || 1000,
     localeMap,
   });
   const client = createTranslateClient(options);
