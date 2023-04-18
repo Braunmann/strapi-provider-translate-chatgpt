@@ -46,8 +46,13 @@ class ProviderOptions {
   }
 }
 
-export const init = (providerOptions: IProviderOptions = {}): IProvider => {
-  const options = new ProviderOptions(providerOptions);
+export const init = ({ apiKey, model, basePath, localeMap }: IProviderOptions = {}): IProvider => {
+  const options = new ProviderOptions({
+    apiKey: apiKey || process.env.OPENAI_API_KEY,
+    model: model || process.env.OPENAI_MODEL || 'text-davinci-003',
+    basePath: basePath || process.env.OPENAI_BASE_PATH || 'https://api.openai.com/v1',
+    localeMap,
+  });
   const client = createTranslateClient(options);
 
   return {

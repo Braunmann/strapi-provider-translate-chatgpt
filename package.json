@@ -19,8 +19,8 @@
     "type": "git",
     "url": "git+https://github.com/Braunmann/strapi-provider-translate-chatgpt.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["strapi", "translate", "provider", "chatgpt"],
+  "author": "Braunmann",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Braunmann/strapi-provider-translate-chatgpt/issues"
