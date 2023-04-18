@@ -1,8 +1,12 @@
+import sleep from '../src/utils/sleep';
+
+const cmd = 'Translate this from EN in to DE:\n\n';
+
 const translateHandler = async (req, res, ctx) => {
   const body = await req.json();
 
   // Too many requests
-  if (body.prompt === 'Translate this from EN in to DE:\n\ntoo many requests') {
+  if (body.prompt === cmd + 'too many requests') {
     return res(ctx.status(429));
   }
 
@@ -10,7 +14,10 @@ const translateHandler = async (req, res, ctx) => {
   // console.log(body);
 
   // OK
-  const text = body.prompt.replace('Translate this from EN in to DE:\n\n', '').trim();
+  const text = body.prompt.replace(cmd, '').trim();
+  if (body.prompt === cmd + 'delay') {
+    await sleep(100, true);
+  }
   return res(
     ctx.json({
       id: 'mock-1',

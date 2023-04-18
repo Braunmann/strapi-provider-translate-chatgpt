@@ -99,23 +99,25 @@ describe('ChatGPT provider', () => {
         // then
         expect(result).to.eql(params.text);
       });
-    });
 
-    // TODO rate limiter
-    // it('with more than 50 texts', async () => {
-    //   // given
-    //   const textsQty = 120;
-    //   const params = {
-    //     sourceLocale: 'en',
-    //     targetLocale: 'de',
-    //     text: Array.from({ length: textsQty }, (_v, i) => `text ${i}`),
-    //   };
-    //   // when
-    //   const result = await chatGptProvider.translate(params);
-    //
-    //   // then
-    //   expect(result).to.eql(params.text);
-    // });
+      it('with more than 10 texts rate limiter', async () => {
+        // given
+        const textsQty = 10;
+        const params = {
+          sourceLocale: 'en',
+          targetLocale: 'de',
+          text: Array.from({ length: textsQty }, (_v, i) => `delay`),
+        };
+        const start = Date.now();
+        // when
+        const result = await chatGptProvider.translate(params);
+
+        const executionTime = Date.now() - start;
+
+        // then
+        expect(executionTime).to.be.above(textsQty * 100); //100ms is a delay on return
+      });
+    });
 
     // TODO text size limiter
     // it('with all fields together more than request size limit', async () => {

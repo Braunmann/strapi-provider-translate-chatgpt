@@ -1,6 +1,7 @@
 import { createTranslateClient } from './openai';
 import { getService } from './getService';
 import { parseLocale } from './parseLocale';
+import Bottleneck from 'bottleneck';
 
 export const index = 'chatgpt';
 export const name = 'ChatGPT';
@@ -59,6 +60,10 @@ export const init = ({ apiKey, model, basePath, localeMap, maxTokens }: IProvide
   });
   const client = createTranslateClient(options);
 
+  const limiter = new Bottleneck({
+    maxConcurrent: 1,
+  });
+
   return {
     /**
      * @param {{
@@ -95,7 +100,11 @@ export const init = ({ apiKey, model, basePath, localeMap, maxTokens }: IProvide
       const tLocale = parseLocale(targetLocale, options.localeMap, 'target');
 
       const result = await Promise.all(
-        textArray.map((t) => client.translate(t, sLocale, tLocale, { maxTokens: options.maxTokens })),
+        textArray.map((t) =>
+          limiter.schedule(() => {
+            return client.translate(t, sLocale, tLocale, { maxTokens: options.maxTokens });
+          }),
+        ),
       );
 
       if (format === 'markdown') {

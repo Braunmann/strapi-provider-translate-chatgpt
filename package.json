@@ -1,6 +1,6 @@
 {
   "name": "strapi-provider-translate-chatgpt",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "ChatGPT provider for translate plugin in Strapi 4",
   "main": "./dist",
   "scripts": {
@@ -19,7 +19,12 @@
     "type": "git",
     "url": "git+https://github.com/Braunmann/strapi-provider-translate-chatgpt.git"
   },
-  "keywords": ["strapi", "translate", "provider", "chatgpt"],
+  "keywords": [
+    "strapi",
+    "translate",
+    "provider",
+    "chatgpt"
+  ],
   "author": "Braunmann",
   "license": "ISC",
   "bugs": {
@@ -45,6 +50,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "bottleneck": "^2.19.5",
     "chai-as-promised": "^7.1.1",
     "openai": "^3.2.1"
   },
