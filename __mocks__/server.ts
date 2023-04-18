@@ -13,6 +13,7 @@ function createQueryJsonEndpoint(path, queryResponseMap) {
   return rest.get(path, (request, restResponse, context) => {
     const response = queryResponseMap[request.url.search];
     if (!response) {
+      // @ts-ignore
       console.warn(`API call ${request.url.toString()} doesn't have a query handler.`);
       return restResponse(context.status(404));
     }

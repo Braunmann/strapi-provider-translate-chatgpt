@@ -1,9 +1,5 @@
 'use strict';
 
-const getService = (name) => {
+export const getService = (name: string) => {
   return strapi.plugin('translate').service(name);
-};
-
-module.exports = {
-  getService,
 };

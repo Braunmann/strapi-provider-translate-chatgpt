@@ -1,10 +1,16 @@
 import { Configuration, OpenAIApi } from 'openai';
 
-class ChatGptTranslator {
-  private _openAiClient: OpenAIApi | null;
-  constructor(private readonly _options) {}
+interface OpenAIOptions {
+  apiKey: string;
+  model: string;
+  basePath: string;
+}
 
-  private _getOpenAiClient() {
+class ChatGptTranslator {
+  private _openAiClient: OpenAIApi | null = null;
+  constructor(private readonly _options: OpenAIOptions) {}
+
+  private _getOpenAiClient(): OpenAIApi {
     if (!this._openAiClient) {
       const configuration = new Configuration(this._options);
       this._openAiClient = new OpenAIApi(configuration);
@@ -24,17 +30,23 @@ class ChatGptTranslator {
         frequency_penalty: 0.0,
         presence_penalty: 0.0,
       });
-      return completion.data.choices[0].text.trim();
+      const result = completion.data.choices[0].text.trim();
+      if (!result) {
+        throw new Error('translate(): No result received');
+      }
+      return result;
     } catch (error) {
       if (error.response) {
-        console.log(error.response.status);
-        console.log(error.response.data);
+        throw new Error('translate(): ' + error.response.status + ': ' + error.response.data);
       } else {
-        console.log(error.message);
+        throw new Error('translate(): ' + error.message);
       }
     }
   }
-  public async usage(): Promise<{}> {
+  public async usage(): Promise<{
+    count: number;
+    limit: number;
+  }> {
     return {
       count: 1,
       limit: 10,
@@ -42,8 +54,8 @@ class ChatGptTranslator {
   }
 }
 
-const createTranslateClient = ({ apiKey, model, basePath }) => {
-  //TODO basePath.replace(/\/+$/, ""); remove last slash
+const createTranslateClient = ({ apiKey, model, basePath }: OpenAIOptions) => {
+  // TODO basePath.replace(/\/+$/, ""); remove last slash
   return new ChatGptTranslator({ apiKey, model, basePath });
 };
 

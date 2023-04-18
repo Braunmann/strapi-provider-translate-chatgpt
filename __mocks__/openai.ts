@@ -2,7 +2,7 @@ const translateHandler = async (req, res, ctx) => {
   const body = await req.json();
 
   // TODO mock no model
-  //console.log(body);
+  // console.log(body);
 
   // OK
   const text = body.prompt.replace('Translate this from EN in to DE:\n\n', '').trim();

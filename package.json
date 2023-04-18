@@ -4,7 +4,7 @@
   "description": "ChatGPT provider for translate plugin in Strapi 4",
   "main": "./dist",
   "scripts": {
-    "test:unit": "ts-mocha -p tsconfig.json --file tests/unit/_setup.ts --exit tests/unit/**.test.ts",
+    "test": "ts-mocha -p tsconfig.json --file tests/unit/_setup.ts --exit tests/unit/**.test.ts",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",

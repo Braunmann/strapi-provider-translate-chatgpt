@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = ({ plugins = {} }) => {
-  let mock = {
-    plugin(name) {
+  const mock = {
+    plugin(name: string): string {
       return this.plugins[name];
     },
     getRef() {
@@ -11,10 +11,10 @@ module.exports = ({ plugins = {} }) => {
     plugins: {
       ...plugins,
       translate: {
-        service(name) {
+        service(name: string) {
           return this.services[name]({ strapi: mock.getRef() });
         },
-        controller(name) {
+        controller(name: string) {
           return this.controllers[name]({ strapi: mock.getRef() });
         },
         services: {
@@ -23,7 +23,7 @@ module.exports = ({ plugins = {} }) => {
         },
       },
       'content-type-builder': {
-        service(name) {
+        service(name: string) {
           return this.services[name];
         },
         services: {
@@ -41,7 +41,7 @@ module.exports = ({ plugins = {} }) => {
         },
       },
     },
-    service(uid) {
+    service(uid: string) {
       const [handler, collection] = uid.split('::');
       if (handler === 'plugin') {
         const [plugin, service] = collection.split('.');
@@ -50,11 +50,11 @@ module.exports = ({ plugins = {} }) => {
         });
       }
       return {
-        findOne: (id, params) => this.entityService.findOne(uid, id, params),
-        find: (params) => this.entityService.findMany(uid, params),
-        create: (params) => this.entityService.create(uid, params),
-        update: (id, params) => this.entityService.update(uid, id, params),
-        delete: (id, params) => this.entityService.delete(uid, id, params),
+        findOne: (id: string | number, params: object) => this.entityService.findOne(uid, id, params),
+        find: (params: object) => this.entityService.findMany(uid, params),
+        create: (params: object) => this.entityService.create(uid, params),
+        update: (id: string | number, params: object) => this.entityService.update(uid, id, params),
+        delete: (id: string | number, params: object) => this.entityService.delete(uid, id, params),
       };
     },
     log: {
@@ -62,11 +62,11 @@ module.exports = ({ plugins = {} }) => {
       // info: jest.fn(),
       // warn: jest.fn(),
       // error: jest.fn(),
-
-      debug: console.debug,
-      info: console.info,
-      warn: console.warn,
-      error: console.error,
+      //
+      // debug: console.debug,
+      // info: console.info,
+      // warn: console.warn,
+      // error: console.error,
     },
   };
 

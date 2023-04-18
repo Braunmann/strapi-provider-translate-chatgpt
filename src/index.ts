@@ -5,7 +5,22 @@ import { parseLocale } from './parseLocale';
 export const index = 'chatgpt';
 export const name = 'ChatGPT';
 
-export const init = (providerOptions = {}) => {
+interface IProviderOptions {
+  apiKey?: string;
+  model?: string;
+  basePath?: string;
+  localeMap?: object;
+}
+
+interface ITranslate {
+  text: string;
+  priority?: number;
+  sourceLocale: string;
+  targetLocale: string;
+  format: 'markdown' | 'plain' | 'html';
+}
+
+export const init = (providerOptions: IProviderOptions = {}) => {
   const apiKey = providerOptions?.apiKey || process.env.OPENAI_API_KEY;
   const model = providerOptions?.model || process.env.OPENAI_MODEL;
   const basePath = providerOptions?.basePath || process.env.OPENAI_BASE_PATH;
@@ -28,7 +43,7 @@ export const init = (providerOptions = {}) => {
      * }} options all translate options
      * @returns {string[]} the input text(s) translated
      */
-    async translate({ text, priority, sourceLocale, targetLocale, format }) {
+    async translate({ text, priority, sourceLocale, targetLocale, format }: ITranslate): Promise<string[]> {
       if (!text) {
         return [];
       }
@@ -43,18 +58,16 @@ export const init = (providerOptions = {}) => {
 
       const formatService = getService('format');
 
-      const tagHandling = format === 'plain' ? undefined : 'html';
-
       let textArray = Array.isArray(text) ? text : [text];
 
       if (format === 'markdown') {
         textArray = formatService.markdownToHtml(textArray);
       }
 
-      const sLocale = parseLocale(sourceLocale, localeMap, 'source'),
-        tLocale = parseLocale(targetLocale, localeMap, 'target');
+      const sLocale = parseLocale(sourceLocale, localeMap, 'source');
+      const tLocale = parseLocale(targetLocale, localeMap, 'target');
 
-      const result = await Promise.all(textArray.map((text) => client.translate(text, sLocale, tLocale)));
+      const result = await Promise.all(textArray.map((t) => client.translate(t, sLocale, tLocale)));
 
       if (format === 'markdown') {
         return formatService.htmlToMarkdown(result);
@@ -62,7 +75,10 @@ export const init = (providerOptions = {}) => {
 
       return result;
     },
-    async usage() {
+    async usage(): Promise<{
+      count: number;
+      limit: number;
+    }> {
       return client.usage();
     },
   };
