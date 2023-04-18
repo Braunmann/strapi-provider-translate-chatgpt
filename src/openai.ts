@@ -46,6 +46,7 @@ class ChatGptTranslator {
       }
       throw new Error('No result received');
     } catch (error) {
+      // @ts-ignore
       const status = error?.response?.status;
 
       switch (status) {
