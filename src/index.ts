@@ -20,17 +20,35 @@ interface ITranslate {
   format: 'markdown' | 'plain' | 'html';
 }
 
-export const init = (providerOptions: IProviderOptions = {}) => {
-  const apiKey = providerOptions?.apiKey || process.env.OPENAI_API_KEY;
-  const model = providerOptions?.model || process.env.OPENAI_MODEL;
-  const basePath = providerOptions?.basePath || process.env.OPENAI_BASE_PATH;
+export interface IProvider {
+  translate(options: ITranslate): Promise<string[]>;
+  usage(): Promise<{
+    count: number;
+    limit: number;
+  }>;
+}
 
-  // const apiKey = process.env.DEEPL_API_KEY || providerOptions.apiKey;
-  // const apiUrl = process.env.DEEPL_API_URL || providerOptions.apiUrl;
-  const localeMap = typeof providerOptions?.localeMap === 'object' ? providerOptions.localeMap : {};
-  // const apiOptions = typeof providerOptions.apiOptions === 'object' ? providerOptions.apiOptions : {};
+class ProviderOptions {
+  readonly apiKey: string;
+  readonly model: string;
+  readonly basePath: string;
+  readonly localeMap: object = {};
 
-  const client = createTranslateClient({ apiKey, model, basePath });
+  constructor({ apiKey, model, basePath, localeMap }: IProviderOptions) {
+    if (!apiKey) throw new Error(`apiKey is not defined`);
+    if (!model) throw new Error(`model is not defined`);
+    if (!basePath) throw new Error(`basePath is not defined`);
+    if (localeMap) this.localeMap = localeMap;
+
+    this.apiKey = apiKey;
+    this.model = model;
+    this.basePath = basePath;
+  }
+}
+
+export const init = (providerOptions: IProviderOptions = {}): IProvider => {
+  const options = new ProviderOptions(providerOptions);
+  const client = createTranslateClient(options);
 
   return {
     /**
@@ -64,8 +82,8 @@ export const init = (providerOptions: IProviderOptions = {}) => {
         textArray = formatService.markdownToHtml(textArray);
       }
 
-      const sLocale = parseLocale(sourceLocale, localeMap, 'source');
-      const tLocale = parseLocale(targetLocale, localeMap, 'target');
+      const sLocale = parseLocale(sourceLocale, options.localeMap, 'source');
+      const tLocale = parseLocale(targetLocale, options.localeMap, 'target');
 
       const result = await Promise.all(textArray.map((t) => client.translate(t, sLocale, tLocale)));
 

@@ -21,7 +21,9 @@ class ChatGptTranslator {
   public async translate(text: string, srcLocale: string, targetLocale: string): Promise<string> {
     try {
       const prompt = `Translate this from ${srcLocale} in to ${targetLocale}:\n\n${text}`;
-      const completion = await this._getOpenAiClient().createCompletion({
+      const {
+        data: { choices },
+      } = await this._getOpenAiClient().createCompletion({
         model: this._options.model,
         prompt,
         temperature: 0.3,
@@ -30,17 +32,12 @@ class ChatGptTranslator {
         frequency_penalty: 0.0,
         presence_penalty: 0.0,
       });
-      const result = completion.data.choices[0].text.trim();
-      if (!result) {
-        throw new Error('translate(): No result received');
+      if (choices[0]) {
+        return String(choices[0]?.text).trim();
       }
-      return result;
+      throw new Error('No result received');
     } catch (error) {
-      if (error.response) {
-        throw new Error('translate(): ' + error.response.status + ': ' + error.response.data);
-      } else {
-        throw new Error('translate(): ' + error.message);
-      }
+      throw new Error(`translate(): ${JSON.stringify(error)}`);
     }
   }
   public async usage(): Promise<{
